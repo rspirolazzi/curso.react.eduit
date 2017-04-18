@@ -14,17 +14,34 @@ class App extends React.Component {
     }
     this.state.todosList << props.todosList;
   }
-  addNewTodo(e) {
-    var count = $('#myTabs a').length - 1;
-    console.log(e.target.title.value);
+  handleNewTodoList(e) {
     e.preventDefault();
     Store.dispatch({type:'ADD_TODOS_LIST', title: e.target.title.value,  icon: e.target.ico.value})
     e.target.title.value = '';
-    $('#myTabs a:eq('+count+')').tab('show');
+  }
+  handleNewTodo(e, id) {
+    e.preventDefault();
+    Store.dispatch({
+      type:'ADD_TODO',
+      id:id,
+      title: e.target.title.value,
+      author:e.target.author.value,
+      asigne:e.target.asigne.value,
+    });
+    e.target.title.value='';
+    e.target.author.value='';
+    e.target.asigne.value='';
   }
   handleRemove(e, id){
     e.preventDefault();
      Store.dispatch({type:'REMOVE_TODO_LIST', id: id})
+  }
+  handleRemoveTodoItem(e, id){
+    e.preventDefault();
+    Store.dispatch({type:'REMOVE_TODO', id: id})
+  }
+  handleCheckTodo(e, id){
+    Store.dispatch({type:'CHECKED_TODO', id: id, checked:e.target.checked})
   }
   render() {
     return (<div id="myTabs">
@@ -39,19 +56,25 @@ class App extends React.Component {
       <div  key={todo.id} role="tabpanel" className="tab-pane" id={todo.id}>
       <div className="panel panel-default">
         <div className="panel-heading"><h3>{todo.title} <i className={"glyphicon glyphicon-"+todo.icon}></i>&nbsp;
-        {(todo.completed) ? <span className="label label-success">Completo</span> : <span className="label label-danger">Incompleto</span>}&nbsp;<div className="pull-right"><button onClick={(e) => this.handleRemove(e, todo.id)} className="btn btn-sm "><i className="glyphicon glyphicon-trash"></i></button></div></h3>
+        {(todo.completed) ? <span className="label label-success">Completo</span> : <span className="label label-danger">Incompleto</span>}&nbsp;<div className="pull-right"><button onClick={(e) => this.handleRemove(e, todo.id)} className="btn btn-sm "><i className="glyphicon glyphicon-remove"></i></button></div></h3>
         </div>
         <div className="panel-body">
-          <Todos key={todo.id} todos={todo.todos}/>
+          <Todos key={todo.id} id={todo.id} todos={todo.todos} handleNewTodo={this.handleNewTodo} handleRemoveTodoItem={this.handleRemoveTodoItem} handleCheckTodo={this.handleCheckTodo}/>
         </div>
       </div>
       </div>
     ))}
       <div key='todo-0' role="tabpanel" className="tab-pane" id="new">
-      <form onSubmit={this.addNewTodo.bind(this)}>
-      <input id="title" name="title" />
-      <input id="ico" name="ico" value='fire' />
-      <input type="submit"/>
+      <form className="form-inline" onSubmit={this.handleNewTodoList.bind(this)}>
+      <div className="form-group">
+        <input className="form-control input-lg" placeholder="Ingrese una lista" id="title" name="title" />
+      </div>
+      <div className="form-group">
+        <select className="form-control input-lg" id="ico" name="ico" >
+          <option value="fire">fire</option>
+        </select>
+      </div>
+      <button type="submit" className="btn btn-success btn-lg"><i className="glyphicon glyphicon-ok"></i></button>
       </form>
       </div>
     </div>
@@ -65,14 +88,18 @@ const todosList =[{
     completed: false,
     author: 'Rodri',
     asigne: 'Rodri',
-    timer: 1000,
+    timer: 0,
+    createdAt:new Date(),
+
   },{
     //id:1,
     title: 'Arroz',
     completed: true,
     author: 'Rodri',
     asigne: 'Cin',
-    timer: 2000,
+    timer: 0,
+    createdAt:new Date(),
+
   },],
 },{
   id:1,title:'Lista de tares', icon:'fire', completed:true, todos:[{
@@ -81,24 +108,28 @@ const todosList =[{
     completed: true,
     author: 'Rodri',
     asigne: 'Rodri',
-    timer: 1000,
+    timer: 0,
+    createdAt:new Date(),
+
   },{
     //id:3,
     title: 'Deploy',
     completed: true,
     author: 'Rodri',
     asigne: 'Cin',
-    timer: 2000,
+    timer: 0,
+    createdAt:new Date(),
+
   },],
 }];
 const appRender = state => {
-  //console.log(state);
   render(<App todosList={state}/>, document.getElementById('app'));
 }
 
 Store.subscribe(()=> {
   //console.log('State changed: ', Store.getState());
   appRender(Store.getState())
+  $('#myTabs > ul > li > a:eq(-2)').tab('show');
 });
 
 todosList.map( tl =>

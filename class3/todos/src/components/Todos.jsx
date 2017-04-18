@@ -1,5 +1,6 @@
 import React from 'react';
 import Todo from './Todo.jsx'
+import TodoInput from './TodoInput.jsx'
 
 /*class Todos extends React.Component {
   constructor(props){
@@ -17,10 +18,25 @@ import Todo from './Todo.jsx'
     </ul></div>)
   }
 }*/
-const Todos = ({todos})=>(<div>
-    <ul className="list-group">
+const Todos = ({todos, id, handleNewTodo, handleRemoveTodoItem, handleCheckTodo})=>{
+  //console.log(handleNewTodo);
+  return (<div>
+    <TodoInput id={id} handleNewTodo={handleNewTodo}/>
+    <table className="table table-stripped">
+    <thead>
+    <tr>
+    <th></th>
+    <th>Tarea</th>
+    <th>Autor</th>
+    <th>Asignado</th>
+    <th>Tiempo en segundos</th>
+    <th></th>
+    </tr>
+    </thead>
+    <tbody>
     {todos.map(todo=>(
-      <Todo key={todo.id} {...todo}/>
+      <Todo key={todo.id} {...todo} handleRemoveTodoItem={handleRemoveTodoItem} handleCheckTodo={handleCheckTodo}/>
     ))}
-  </ul></div>)
+    </tbody>
+  </table></div>)}
 export default Todos;
