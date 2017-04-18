@@ -17,7 +17,10 @@ import React from 'react';
   }
 }*/
 const Todo =({title, author, asigne, timer, completed, id})=> (<li className={"list-group-item " + (completed?'active':'')}>
-      {title}&nbsp;
+      <label htmlFor={"checkbox-"+id}>
+      <input type="checkbox" id={"checkbox-"+id}/>
+        {title}&nbsp;
+      </label>
       <i className="glyphicon glyphicon-user"></i><span className="label label-default">{author}</span>
       <i className="glyphicon glyphicon-resize-horizontal"></i><span className="label label-info">{asigne}</span>
       <span className="badge">{timer}</span>
